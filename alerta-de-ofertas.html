@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🔔 Alerta de Ofertas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #0C0C0E;
+      --surface:    #161618;
+      --border:     rgba(255,255,255,0.07);
+      --white:      #FFFFFF;
+      --muted:      rgba(255,255,255,0.45);
+
+      /* cores por nicho */
+      --c-geral:    #E53935;
+      --c-tech:     #1E88E5;
+      --c-casa:     #43A047;
+      --c-moda:     #8E24AA;
+      --c-infantil: #FB8C00;
+
+      --yellow:     #FFD600;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      min-height: 100vh;
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 16px 64px;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 52px 0 28px;
+      gap: 14px;
+    }
+
+    .logo-wrap {
+      position: relative;
+      width: 108px;
+      height: 108px;
+    }
+
+    .logo-wrap img {
+      width: 108px;
+      height: 108px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2.5px solid rgba(255,214,0,0.6);
+      box-shadow:
+        0 0 0 6px rgba(255,214,0,0.08),
+        0 12px 40px rgba(0,0,0,0.7);
+      display: block;
+      position: relative;
+      z-index: 1;
+    }
+
+    .ring {
+      position: absolute;
+      inset: -10px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,214,0,0.3);
+      animation: ringOut 2.8s ease-out infinite;
+    }
+    .ring:nth-child(2) { animation-delay: .9s; }
+    .ring:nth-child(3) { animation-delay: 1.8s; }
+
+    @keyframes ringOut {
+      0%   { transform: scale(1);    opacity: .6; }
+      100% { transform: scale(1.6);  opacity: 0;  }
+    }
+
+    .hero-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2rem, 9vw, 3rem);
+      letter-spacing: 4px;
+      color: var(--yellow);
+      text-align: center;
+      line-height: 1;
+    }
+
+    .hero-desc {
+      font-size: .85rem;
+      color: var(--muted);
+      text-align: center;
+      max-width: 290px;
+      line-height: 1.55;
+    }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 999px;
+      padding: 5px 14px 5px 10px;
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+    }
+    .live-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #4CAF50;
+      box-shadow: 0 0 0 0 rgba(76,175,80,.6);
+      animation: livePulse 1.4s ease-in-out infinite;
+    }
+    @keyframes livePulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(76,175,80,.5); }
+      50%      { box-shadow: 0 0 0 5px rgba(76,175,80,0); }
+    }
+
+    /* ─── LABEL ─── */
+    .section-label {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 36px 0 14px;
+      text-align: center;
+    }
+
+    /* ─── CARDS ─── */
+    .cards {
+      width: 100%;
+      max-width: 460px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      text-decoration: none;
+      color: var(--white);
+      position: relative;
+      overflow: hidden;
+      transition: transform .16s ease, box-shadow .16s ease;
+    }
+
+    /* barra colorida lateral */
+    .card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 16px; bottom: 16px;
+      width: 3px;
+      border-radius: 0 3px 3px 0;
+      background: var(--accent);
+    }
+
+    /* glow suave no hover */
+    .card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at left center, var(--accent-glow, transparent) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity .2s;
+      pointer-events: none;
+    }
+
+    .card:not(.card--soon):hover,
+    .card:not(.card--soon):focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      outline: none;
+    }
+    .card:not(.card--soon):hover::after { opacity: 1; }
+    .card:not(.card--soon):active { transform: scale(.98); }
+
+    .card--soon {
+      opacity: .55;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    /* ícone */
+    .card-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .card-body { flex: 1; min-width: 0; }
+
+    .card-eyebrow {
+      font-size: .6rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 2px;
+    }
+
+    .card-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.15rem;
+      letter-spacing: 1.5px;
+      line-height: 1.1;
+    }
+
+    .card-sub {
+      font-size: .75rem;
+      color: var(--muted);
+      margin-top: 3px;
+      line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-pill {
+      display: inline-block;
+      font-size: .6rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-top: 6px;
+    }
+    .pill-open {
+      background: rgba(76,175,80,.15);
+      color: #69f0ae;
+    }
+    .pill-soon {
+      background: rgba(255,255,255,.07);
+      color: rgba(255,255,255,.4);
+    }
+
+    .card-arrow {
+      font-size: 1.2rem;
+      color: var(--accent);
+      flex-shrink: 0;
+      transition: transform .16s;
+    }
+    .card:not(.card--soon):hover .card-arrow { transform: translateX(4px); }
+
+    /* ─── nichos ─── */
+    .card--geral    { --accent: var(--c-geral);    --accent-glow: rgba(229,57,53,.12); }
+    .card--tech     { --accent: var(--c-tech);     --accent-glow: rgba(30,136,229,.12); }
+    .card--casa     { --accent: var(--c-casa);     --accent-glow: rgba(67,160,71,.12); }
+    .card--moda     { --accent: var(--c-moda);     --accent-glow: rgba(142,36,170,.12); }
+    .card--infantil { --accent: var(--c-infantil); --accent-glow: rgba(251,140,0,.12); }
+
+    /* ─── PLATAFORMAS ─── */
+    .platforms {
+      margin-top: 36px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .platforms-label {
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .platforms-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .plat-chip {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 999px;
+      padding: 5px 14px;
+      font-size: .72rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: .5px;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      margin-top: 44px;
+      font-size: .68rem;
+      color: rgba(255,255,255,0.2);
+      text-align: center;
+      line-height: 2;
+    }
+
+    /* ─── DIVIDER ─── */
+    .divider {
+      width: 100%;
+      max-width: 460px;
+      height: 1px;
+      background: var(--border);
+      margin: 32px 0 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="logo-wrap">
+      <div class="ring"></div>
+      <div class="ring"></div>
+      <img src="IMG_8055.PNG" alt="Alerta de Ofertas"
+           onerror="this.outerHTML='<div style=\'width:108px;height:108px;border-radius:50%;background:#1a1a1a;border:2px solid #FFD600;display:flex;align-items:center;justify-content:center;font-size:3rem;z-index:1;position:relative\'>🔔</div>'"/>
+    </div>
+
+    <h1 class="hero-name">Alerta de Ofertas</h1>
+    <p class="hero-desc">Promoções garimpadas todo dia — direto no seu WhatsApp 🛒</p>
+    <span class="live-badge"><span class="live-dot"></span> Grupos ativos</span>
+  </div>
+
+  <!-- CARDS -->
+  <p class="section-label">Escolha seu grupo</p>
+
+  <div class="cards">
+
+    <!-- GERAL -->
+    <a class="card card--geral"
+       href="https://chat.whatsapp.com/JBJEmtwfeir0ilXuGFcq5u?s=cl&p=i&mlu=4"
+       target="_blank" rel="noopener">
+      <div class="card-icon">🔔</div>
+      <div class="card-body">
+        <div class="card-eyebrow">Grupo Principal</div>
+        <div class="card-title">Alerta de Ofertas</div>
+        <div class="card-sub">Tech, casa, moda, infantil e muito mais</div>
+        <span class="card-pill pill-open">● Aberto</span>
+      </div>
+      <span class="card-arrow">›</span>
+    </a>
+
+    <!-- TECH -->
+    <div class="card card--tech card--soon">
+      <div class="card-icon">⚡</div>
+      <div class="card-body">
+        <div class="card-eyebrow">Tecnologia</div>
+        <div class="card-title">Alerta Tech</div>
+        <div class="card-sub">Celulares, notebooks, games e eletrônicos</div>
+        <span class="card-pill pill-soon">Em breve</span>
+      </div>
+    </div>
+
+    <!-- CASA -->
+    <div class="card card--casa card--soon">
+      <div class="card-icon">🏠</div>
+      <div class="card-body">
+        <div class="card-eyebrow">Casa & Decoração</div>
+        <div class="card-title">Alerta Casa</div>
+        <div class="card-sub">Cozinha, utilidades e tudo pro seu lar</div>
+        <span class="card-pill pill-soon">Em breve</span>
+      </div>
+    </div>
+
+    <!-- MODA -->
+    <div class="card card--moda card--soon">
+      <div class="card-icon">👗</div>
+      <div class="card-body">
+        <div class="card-eyebrow">Moda & Estilo</div>
+        <div class="card-title">Alerta Moda</div>
+        <div class="card-sub">Roupas, calçados e acessórios</div>
+        <span class="card-pill pill-soon">Em breve</span>
+      </div>
+    </div>
+
+    <!-- INFANTIL -->
+    <div class="card card--infantil card--soon">
+      <div class="card-icon">👶</div>
+      <div class="card-body">
+        <div class="card-eyebrow">Bebê & Criança</div>
+        <div class="card-title">Alerta Infantil</div>
+        <div class="card-sub">Produtos, brinquedos e enxoval</div>
+        <span class="card-pill pill-soon">Em breve</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PLATAFORMAS -->
+  <div class="platforms">
+    <span class="platforms-label">Ofertas de</span>
+    <div class="platforms-row">
+      <span class="plat-chip">Amazon</span>
+      <span class="plat-chip">Mercado Livre</span>
+      <span class="plat-chip">Shopee</span>
+      <span class="plat-chip">Netshoes</span>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <footer>
+    🔔 Alerta de Ofertas<br/>
+    Curadoria de promoções todo dia · Acesso 100% gratuito
+  </footer>
+
+</body>
+</html>
